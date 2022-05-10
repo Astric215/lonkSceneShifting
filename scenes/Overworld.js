@@ -49,39 +49,42 @@ class Overworld extends Phaser.Scene {
         this.player.body.allowGravity = false;
         this.player.body.setCollideWorldBounds(true);
         this.player.body.onWorldBounds = true;
-
+        let bounds = [this.ROOMWIDTH, this.ROOMHEIGHT, this.ROOMWIDTH, this.ROOMHEIGHT];
+        let room = [1.5, 1.5];
         this.physics.world.on('worldbounds', (body, blockedUp, blockedDown, blockedLeft, blockedRight) => {
-            let room = [this.ROOMWIDTH*1.5, this.ROOMHEIGHT*1.5];
             let reset = [this.player.body.x+this.player.body.halfWidth, this.player.body.y+this.player.body.halfHeight];
+        
             if(blockedUp){
-                room[1] = this.ROOMHEIGHT*0.5;
-                reset[1] = this.player.body.y-20;
+                room[1] -= 1;
+                reset[1] = this.player.body.y-40;
+                bounds[1] -= this.ROOMHEIGHT;
             }
             if(blockedDown) {
-                room[1] = this.ROOMHEIGHT*2.5;
-                reset[1] = this.player.body.y+40;
+                room[1] += 1;
+                reset[1] = this.player.body.y+60;
+                bounds[1] += this.ROOMHEIGHT;
             }
             if(blockedLeft) {
-                room[0] = this.ROOMWIDTH * 0.5;
-                reset[0] = this.player.body.x-20;
+                room[0] -= 1;
+                reset[0] = this.player.body.x-40;
+                bounds[0] -= this.ROOMWIDTH;
             }
             if(blockedRight) {
-                room[0] = this.ROOMWIDTH * 2.5;
-                reset[0] = this.player.body.x+20;
+                room[0] += 1;
+                reset[0] = this.player.body.x+40;
+                bounds[0] += this.ROOMWIDTH;
             }
             this.cameras.main.flash(250);
             this.cameras.main.shake(250);
             this.cameras.main.pan(
-                room[0],
-                room[1],
+                this.ROOMWIDTH  * room[0],
+                this.ROOMHEIGHT * room[1],
                 3000,
                 'Bounce'
             );
-            this.physics.world.setBounds(this.ROOMWIDTH, 0, this.ROOMWIDTH, this.ROOMHEIGHT);
+            this.physics.world.setBounds(bounds[0], bounds[1], bounds[2], bounds[3]);
             
             this.player.body.reset(reset[0], reset[1]);
-            reset = [this.player.body.x ,this.player.body.y];
-            console.log(reset[0] + ',' + reset[1]);
         });
 
         // Use Phaser-provided cursor key creation function
